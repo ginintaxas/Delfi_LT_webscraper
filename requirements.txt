@@ -1,2 +1,4 @@
 chromedriver-py
 selenium
+beautifulsoup4
+lxml

@@ -1,10 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from scrapper_functions import *
-
-#opens a chromium browser with delfi.lt site
-#!!!!!!!!!DONT FORGET TO driver.quit() AFTER USE!!!!!!!!!!!!!!!!!!
-driver = open_driver()
-with open("output.html", "w", encoding="utf-8") as file:
-    file.write(driver.page_source)
-driver.quit()
+import time
+try:
+    driver = open_driver()
+    time.sleep(2)
+    html = driver.page_source
+    article_list = parse_html(html)
+    store_articles_in_csv(article_list)
+finally:
+    driver.quit()
