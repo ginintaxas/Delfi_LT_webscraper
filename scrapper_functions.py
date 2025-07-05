@@ -11,9 +11,8 @@ def open_driver():
     options.add_argument("--incognito")  
     service = webdriver.ChromeService(executable_path=binary_path)
     driver = webdriver.Chrome(options=options, service=service)
-    driver.get("http://www.delfi.lt/")
     return driver
-#check if the selected subdir for delfi.lt is available for scraping NOT IN USE YET
+#check if the selected subdir for delfi.lt is available for scraping
 def check_correct_subdir(argSubdir):
     listofsubdirs = ["verslas", "sportas", "veidai"]
     for subdir in listofsubdirs:
@@ -23,6 +22,15 @@ def check_correct_subdir(argSubdir):
     else:
         return False
 #--------------------------------------------------------------------------------------- 
+
+def set_subdir(subdir, driver):
+    if check_correct_subdir(subdir):
+       driver.get(f"https://www.delfi.lt/{subdir}")
+       print(driver.current_url)
+    else:
+        driver.get("https://www.delfi.lt/")
+        print(driver.current_url)
+        raise Exception(f"No subdir under name {subdir} is yet available to scrape")
 
 def store_articles_in_csv(article_list):
     with open("articles.csv", mode="w", newline="", encoding="utf-8") as file:
@@ -37,7 +45,6 @@ def strip_of_hashtags_and_quotes(text):
             text = text[space_index+1:]
     if text.endswith('"') and text.startswith('"'):
         text = text[1:-1]
-    print(text)
     return text
 
 def parse_html(html):

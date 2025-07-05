@@ -1,2 +1,10 @@
 # delfi_scrapper
-this is a delfi site webscrapper
+This is a delfi site webscrapper
+
+usage:
+scrapper.py [subdir of the website]
+example:
+scrapper.py verslas
+
+subdirs available:
+verslas, sportas, veidai
