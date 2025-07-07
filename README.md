@@ -24,4 +24,5 @@ All configuration (subdirs to scrape, language) is managed through a JSON config
 
 ## Usage
 Basic usage:
+```bash
 python scrapper.py
