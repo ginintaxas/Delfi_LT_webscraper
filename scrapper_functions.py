@@ -2,7 +2,9 @@ from selenium import webdriver
 from chromedriver_py import binary_path
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+from pathlib import Path
 import csv
+import json
 #opens a chromium browser with delfi.lt site
 #!!!!!!!!!DONT FORGET TO driver.quit() AFTER USE!!!!!!!!!!!!!!!!!!
 def open_driver():
@@ -12,32 +14,50 @@ def open_driver():
     service = webdriver.ChromeService(executable_path=binary_path)
     driver = webdriver.Chrome(options=options, service=service)
     return driver
-#check if the selected subdir for delfi.lt is available for scraping
-def check_correct_subdir(argSubdir):
-    listofsubdirs = ["verslas", "sportas", "veidai"]
-    for subdir in listofsubdirs:
-        if subdir == argSubdir:
-            return True
-            break
+
+#checks if the selected language is valid
+def valid_language(language):
+    if language == 'lt' or language == 'ru' or language == 'en':
+        return True
     else:
         return False
-#--------------------------------------------------------------------------------------- 
 
-def set_subdir(subdir, driver):
-    if check_correct_subdir(subdir):
-       driver.get(f"https://www.delfi.lt/{subdir}")
-       print(driver.current_url)
+#check if the selected subdir for delfi.lt is available for scraping
+def check_correct_subdir(language, argSubdir):
+    if valid_language(language):
+        listofLTsubdirs = ["tv", "laisvalaikis", "verslas", "sportas", "veidai", ""]
+        listofENsubdirs = ["politics", "business", "world-lithuanians", "expats-in-lt", "culture", "lifestyle", ""]
+        listofRUsubdirs = ["poslednie", "news/economy, detektor-lzhi","sport", "misc", ""]
+        if language == "lt":
+            return argSubdir in listofLTsubdirs
+        elif language == "en":
+            return argSubdir in listofENsubdirs
+        else:
+            return argSubdir in listofRUsubdirs
+
+#sets the selected subdir of the website, example: delfi.lt/verslas
+def set_subdir(language, subdir, driver):
+    if check_correct_subdir(language, subdir):
+        if language == 'lt':
+            driver.get(f"https://www.delfi.lt/{subdir}")
+        else:
+            driver.get(f"https://www.delfi.lt/{language}/{subdir}")
     else:
         driver.get("https://www.delfi.lt/")
-        print(driver.current_url)
-        raise Exception(f"No subdir under name {subdir} is yet available to scrape")
+        raise Exception(f"No subdir under name {subdir} is not yet available to scrape or incorrect language")
 
-def store_articles_in_csv(article_list):
-    with open("articles.csv", mode="w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-        for val in article_list:
-            writer.writerow([val])
+#stores a list of articles in csv format
+def store_articles(article_list, format, output):
+    #creates an output folder if it doesnt exist
+    output_path = Path(f"{output}")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if format == "csv":
+        with open(output_path, mode="w", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            for article in article_list:
+                writer.writerow([article])
 
+#strips of unnesecarry info
 def strip_of_hashtags_and_quotes(text):
     if text.startswith('#'):
         space_index = text.find(' ')
@@ -47,6 +67,7 @@ def strip_of_hashtags_and_quotes(text):
         text = text[1:-1]
     return text
 
+#return a list of articles from given html
 def parse_html(html):
     soup = BeautifulSoup(html, 'lxml')
     articles = soup.find_all('article')
@@ -57,3 +78,8 @@ def parse_html(html):
         article_text = strip_of_hashtags_and_quotes(article_text)
         article_list.append(article_text)
     return article_list
+#parses the config.json file and returns language and subdir
+def parse_json_config():
+    with open('config.json', 'r') as file:
+        config_data = json.load(file)
+        return config_data

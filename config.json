@@ -1,1 +1,8 @@
-{"language":"Lithuanian"}
+{
+  "subdir": "culture",
+  "language": "en",
+  "output": {
+    "format": "csv",
+    "file": "output/articles.csv"
+  }
+}
