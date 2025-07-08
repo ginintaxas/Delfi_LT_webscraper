@@ -26,6 +26,7 @@ All configuration (subdirs to scrape, language) is managed through a JSON config
 Basic usage:
 ```bash
 python scrapper.py
+```
 
 ## Config
 All configuration is done through the config.json file which is located in the same github repo with everything else.
