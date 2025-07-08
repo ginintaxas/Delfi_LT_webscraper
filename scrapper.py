@@ -5,7 +5,7 @@ import time
 try:
     #extracts config data from config.json file
     config_data = parse_json_config()
-    #sets site subdir and language based on the config file
+    #sets site subdir, output format and language based on the config file
     subdir = config_data["subdir"]
     language = config_data["language"]
     format = config_data["output"]["format"]

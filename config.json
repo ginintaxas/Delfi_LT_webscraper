@@ -2,7 +2,7 @@
   "subdir": "culture",
   "language": "en",
   "output": {
-    "format": "csv",
-    "file": "output/articles.csv"
+    "format": "txt",
+    "file": "output/articles.txt"
   }
 }

@@ -56,6 +56,10 @@ def store_articles(article_list, format, output):
             writer = csv.writer(file)
             for article in article_list:
                 writer.writerow([article])
+    if format == "txt":
+        with open(output_path, mode="w", encoding="utf-8") as file:
+            for article in article_list:
+                file.write(article+'\n')
 
 #strips of unnesecarry info
 def strip_of_hashtags_and_quotes(text):
