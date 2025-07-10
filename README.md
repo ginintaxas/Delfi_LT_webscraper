@@ -42,6 +42,7 @@ Everything is mostly self explanatory, language selects language that delfi prov
 - **sqlite**: articles are stored in a database called articles
 - **txt**: articles are stored in a plain text file
 - **csv**: articles are stored in csv
+- **txt_full**: articles are stored in format - title is the same as file name and the contents of the full article are stored in the text file
 ### Example config file
 ```bash
 {
