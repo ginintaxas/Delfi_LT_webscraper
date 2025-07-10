@@ -34,3 +34,20 @@ Everything is mostly self explanatory, language selects language that delfi prov
 
 *Note whilst selecting output format don't forget to add file format extension (.txt, .csv)*
 Config options are listed here:
+        - if language selected is Lithuanian (lt): tv, laisvalaikis, verslas, sportas, veidai
+        - if language selected is English (en): politics, business, world-lithuanians, expats-in-lt, culture, lifestyle 
+        - if language selected is Rusian (ru): poslednie, news/economy, detektor-lzhi,sport, misc
+Output:
+        - sqlite: articles are stored in a database called articles
+        - txt: articles are stored in a plain text file
+        - csv: articles are stored in csv
+Example config file
+```bash
+{
+  "subdir": "culture",
+  "language": "en",
+  "output": {
+    "format": "sqlite",
+    "file": "output/articles.db"
+  }
+}
