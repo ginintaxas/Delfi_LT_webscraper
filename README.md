@@ -32,16 +32,17 @@ python scrapper.py
 All configuration is done through the config.json file which is located in the same github repo with everything else.
 Everything is mostly self explanatory, language selects language that delfi provides (lt, ru or en), subdir so (culture, sports and so on) and the output format.
 
-*Note whilst selecting output format don't forget to add file format extension (.txt, .csv)*
-Config options are listed here:
-        - if language selected is Lithuanian (lt): tv, laisvalaikis, verslas, sportas, veidai
-        - if language selected is English (en): politics, business, world-lithuanians, expats-in-lt, culture, lifestyle 
-        - if language selected is Rusian (ru): poslednie, news/economy, detektor-lzhi,sport, misc
-Output:
+*Note whilst selecting output file don't forget to add file format extension (.txt, .csv)*
+
+### Subdirectory Options by Language
+- **Lithuanian (`lt`)**: `tv`, `laisvalaikis`, `verslas`, `sportas`, `veidai`
+- **English (`en`)**: `politics`, `business`, `world-lithuanians`, `expats-in-lt`, `culture`, `lifestyle`
+- **Russian (`ru`)**: `poslednie`, `news/economy`, `detektor-lzhi`, `sport`, `misc`
+### Subdirectory Options by format
         - sqlite: articles are stored in a database called articles
         - txt: articles are stored in a plain text file
         - csv: articles are stored in csv
-Example config file
+### Example config file
 ```bash
 {
   "subdir": "culture",
