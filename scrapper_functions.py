@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 import csv
 import json
+import sqlite3
 #opens a chromium browser with delfi.lt site
 #!!!!!!!!!DONT FORGET TO driver.quit() AFTER USE!!!!!!!!!!!!!!!!!!
 def open_driver():
@@ -46,21 +47,41 @@ def set_subdir(language, subdir, driver):
         driver.get("https://www.delfi.lt/")
         raise Exception(f"No subdir under name {subdir} is not yet available to scrape or incorrect language")
 
-#stores a list of articles in csv format
+#stores a list of articles in the given format
 def store_articles(article_list, format, output):
     #creates an output folder if it doesnt exist
     output_path = Path(f"{output}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if format == "csv":
+        #writes to a csv file
         with open(output_path, mode="w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             for article in article_list:
                 writer.writerow([article])
     if format == "txt":
+        #writes to a txt file
         with open(output_path, mode="w", encoding="utf-8") as file:
             for article in article_list:
                 file.write(article+'\n')
-
+    if format == "sqlite":
+        #creates a list of touples (because sqlite requires tuples to be inserted) from the given list
+        article_list_tuples = []
+        for article in article_list:
+            article_list_tuples.append((article,))
+        #creates a connection to the database
+        con = sqlite3.connect(output_path)
+        cursor = con.cursor()
+        #creates articles database
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS articles(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL
+        )
+        """)
+        #inserts data into articles
+        cursor.executemany("INSERT INTO articles (title) VALUES (?)", article_list_tuples)
+        #saves the database
+        con.commit()
 #strips of unnesecarry info
 def strip_of_hashtags_and_quotes(text):
     if text.startswith('#'):
