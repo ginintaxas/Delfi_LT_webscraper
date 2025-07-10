@@ -39,9 +39,9 @@ Everything is mostly self explanatory, language selects language that delfi prov
 - **English (`en`)**: `politics`, `business`, `world-lithuanians`, `expats-in-lt`, `culture`, `lifestyle`
 - **Russian (`ru`)**: `poslednie`, `news/economy`, `detektor-lzhi`, `sport`, `misc`
 ### Subdirectory Options by format
-        - sqlite: articles are stored in a database called articles
-        - txt: articles are stored in a plain text file
-        - csv: articles are stored in csv
+- **sqlite**: articles are stored in a database called articles
+- **txt**: articles are stored in a plain text file
+- **csv**: articles are stored in csv
 ### Example config file
 ```bash
 {
