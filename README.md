@@ -43,6 +43,7 @@ Everything is mostly self explanatory, language selects language that delfi prov
 - **txt**: articles are stored in a plain text file
 - **csv**: articles are stored in csv
 - **txt_full**: articles are stored in format - title is the same as file name and the contents of the full article are stored in the text file
+  *txt_full option can only be used with a directory as an output file because this option generates more than one file*
 ### Example config file
 ```bash
 {
