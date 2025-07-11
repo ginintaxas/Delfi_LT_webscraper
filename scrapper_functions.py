@@ -47,41 +47,56 @@ def set_subdir(language, subdir, driver):
         driver.get("https://www.delfi.lt/")
         raise Exception(f"No subdir under name {subdir} is not yet available to scrape or incorrect language")
 
+def store_sql(article_list, output_path):
+#creates a list of touples (because sqlite requires tuples to be inserted) from the given list
+    article_list_tuples = []
+    for article in article_list:
+        article_list_tuples.append((article,))
+    #creates a connection to the database
+    con = sqlite3.connect(output_path)
+    cursor = con.cursor()
+    #creates articles database
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS articles(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL
+    )
+    """)
+    #inserts data into articles
+    cursor.executemany("INSERT INTO articles (title) VALUES (?)", article_list_tuples)
+    #saves the database
+    con.commit()
+
+# stores in text format but with full article content !!! REQUIRES output file to be a folder
+def txt_full_store(title_list, article_list, output_folder):
+    output_path = Path(output_folder)
+    output_path.mkdir(parents=True, exist_ok=True)
+    for id, title in enumerate(title_list):
+        if id >= len(article_list):
+            break
+        with open(output_path / f"{id}.txt", mode="w", newline="", encoding="utf-8") as file:
+            file.write(title+"\n")
+            file.write(article_list[id])
 #stores a list of articles in the given format
-def store_articles(article_list, format, output):
+def store_articles(title_list, article_content_list, format, output):
     #creates an output folder if it doesnt exist
-    output_path = Path(f"{output}")
+    output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if format == "csv":
         #writes to a csv file
         with open(output_path, mode="w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
-            for article in article_list:
+            for article in title_list:
                 writer.writerow([article])
     if format == "txt":
         #writes to a txt file
         with open(output_path, mode="w", encoding="utf-8") as file:
-            for article in article_list:
+            for article in title_list:
                 file.write(article+'\n')
     if format == "sqlite":
-        #creates a list of touples (because sqlite requires tuples to be inserted) from the given list
-        article_list_tuples = []
-        for article in article_list:
-            article_list_tuples.append((article,))
-        #creates a connection to the database
-        con = sqlite3.connect(output_path)
-        cursor = con.cursor()
-        #creates articles database
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS articles(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL
-        )
-        """)
-        #inserts data into articles
-        cursor.executemany("INSERT INTO articles (title) VALUES (?)", article_list_tuples)
-        #saves the database
-        con.commit()
+        store_sql(title_list, output_path)
+    if format == "txt_full":
+        txt_full_store(title_list, article_content_list, output_path) #~~~~~~~~~~~~~~~~~!!!!!!!!!!!!!!!!!!!!!!
 #strips of unnesecarry info
 def strip_of_hashtags_and_quotes(text):
     if text.startswith('#'):
@@ -92,17 +107,54 @@ def strip_of_hashtags_and_quotes(text):
         text = text[1:-1]
     return text
 
-#return a list of articles from given html
-def parse_html(html):
+#return a tuple of which first member is title list and the second one is article url list for parsing
+def extract_article_list(html):
     soup = BeautifulSoup(html, 'lxml')
     articles = soup.find_all('article')
     article_list = []
+    url_list = []
     for article in articles:
+        #extracts article full paragraph url
+        url_list.append(extract_article_content_url(article))
+        #finds the title text
         h5tag = article.find("h5")
         article_text = h5tag.get_text(strip=True)
         article_text = strip_of_hashtags_and_quotes(article_text)
         article_list.append(article_text)
-    return article_list
+    return (article_list, url_list)
+#finds the correct href atribute for the full article text url
+def extract_article_content_url(article_html):
+    divOfUrl = article_html.find("div").find("div")
+    url = divOfUrl.find("a").get("href")
+    httpPrefix = "https://www.delfi.lt"
+    if not url.startswith(httpPrefix):
+        url = httpPrefix + url
+    return url
+#parses the full article which is located in a subdir of delfi
+def parse_article_content_text(driver, url_list):
+    article_text_list = []
+    #iterates through all given urls
+    for url in url_list:
+        #get the site and extracts the html
+        driver.get(url)
+        html = driver.page_source
+        soup = BeautifulSoup(html,'lxml')
+        #finds the article text section
+        article_block = soup.find('div', class_="col-article")
+        if article_block == None:
+            article_text_list.append('empty or failed to fetch')
+            continue
+        full_text = ""
+        p_tags = article_block.find_all('p')
+        #extracts the text from the article
+        for p in p_tags:
+            #find bare content text in <p>
+            text = p.find(text=True, recursive=False)
+            #if the text value is null (none) then make it an empty string
+            text = text.strip() if text else ''
+            full_text = full_text + '\n' + text
+        article_text_list.append(full_text)
+    return article_text_list
 #parses the config.json file and returns language and subdir
 def parse_json_config():
     with open('config.json', 'r') as file:

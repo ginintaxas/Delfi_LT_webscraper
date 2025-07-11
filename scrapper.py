@@ -17,7 +17,10 @@ try:
     time.sleep(2)
     html = driver.page_source
     #parses and stores articles
-    article_list = parse_html(html)
-    store_articles(article_list, format, output_file)
+    url_and_article_tuple = extract_article_list(html)
+    title_list = url_and_article_tuple[0]
+    full_content_url_list = url_and_article_tuple[1]
+    full_content_text_list = parse_article_content_text(driver, full_content_url_list)
+    store_articles(title_list, full_content_text_list, format, output_file)
 finally:
     driver.quit()

@@ -1,8 +1,8 @@
 {
-  "subdir": "culture",
-  "language": "en",
+  "subdir": "",
+  "language": "lt",
   "output": {
-    "format": "txt",
-    "file": "output/articles.txt"
+    "format": "txt_full",
+    "file": "output"
   }
 }
