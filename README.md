@@ -1,7 +1,7 @@
 # delfi_scrapper
 
 ## Description
-A Python-based web scraper that extracts top page articles from www.delfi.lt. It fetches and parses web pages, then saves the data in CSV/Sqlite format.
+A Python-based web scraper that extracts top page articles from www.delfi.lt. It fetches and parses web pages, then saves the data in txt/csv/Sqlite format.
 
 ## Table of Contents
 - [Installation](#installation)
