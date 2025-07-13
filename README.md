@@ -1,4 +1,4 @@
-# delfi lt web scraper
+# Delfi lt web scraper
 
 ## Description
 A Python-based web scraper that extracts top page articles from www.delfi.lt. It fetches and parses web pages, then saves the data in txt/csv/Sqlite format.
