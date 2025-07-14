@@ -1,4 +1,4 @@
-# delfi web scraper
+# Delfi lt web scraper
 
 ## Description
 A Python-based web scraper that extracts top page articles from www.delfi.lt. It fetches and parses web pages, then saves the data in txt/csv/Sqlite format.
@@ -42,7 +42,7 @@ Everything is mostly self explanatory, language selects language that delfi prov
 - **sqlite**: articles are stored in a database called articles
 - **txt**: articles are stored in a plain text file
 - **csv**: articles are stored in csv
-- **txt_full**: articles are stored in format - title is the same as file name and the contents of the full article are stored in the text file
+- **txt_full**: articles are stored in format - number of the title by its position in the page is the name then the first thing in the file is the title and the contents of the full article
   
   *txt_full option can only be used with a directory as an output file because this option generates more than one file*
 ### Example config file
