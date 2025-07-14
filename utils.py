@@ -78,7 +78,7 @@ def txt_full_store(title_list, article_list, output_folder):
             file.write(title+"\n")
             file.write(article_list[id])
 #stores a list of articles in the given format
-def store_articles(title_list, article_content_list, format, output):
+def store_articles(title_list, article_url_list, format, output):
     #creates an output folder if it doesnt exist
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -96,7 +96,8 @@ def store_articles(title_list, article_content_list, format, output):
     if format == "sqlite":
         store_sql(title_list, output_path)
     if format == "txt_full":
-        txt_full_store(title_list, article_content_list, output_path) #~~~~~~~~~~~~~~~~~!!!!!!!!!!!!!!!!!!!!!!
+        article_content_list = parse_article_content_text(driver, full_content_url_list)
+        txt_full_store(title_list, article_content_list, output_path)
 #strips of unnesecarry info
 def strip_of_hashtags_and_quotes(text):
     if text.startswith('#'):

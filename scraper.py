@@ -1,5 +1,5 @@
 from selenium import webdriver
-from scrapper_functions import *
+from utils import *
 import sys
 import time
 try:
@@ -20,7 +20,6 @@ try:
     url_and_article_tuple = extract_article_list(html)
     title_list = url_and_article_tuple[0]
     full_content_url_list = url_and_article_tuple[1]
-    full_content_text_list = parse_article_content_text(driver, full_content_url_list)
-    store_articles(title_list, full_content_text_list, format, output_file)
+    store_articles(title_list, full_content_url_list, format, output_file)
 finally:
     driver.quit()

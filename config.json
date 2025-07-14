@@ -2,7 +2,7 @@
   "subdir": "",
   "language": "lt",
   "output": {
-    "format": "txt_full",
-    "file": "output"
+    "format": "txt",
+    "file": "output/titles.txt"
   }
 }
