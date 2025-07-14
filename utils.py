@@ -6,8 +6,6 @@ from pathlib import Path
 import csv
 import json
 import sqlite3
-#opens a chromium browser with delfi.lt site
-#!!!!!!!!!DONT FORGET TO driver.quit() AFTER USE!!!!!!!!!!!!!!!!!!
 def open_driver():
     options = Options()
     options.add_argument("--headless")
@@ -16,14 +14,12 @@ def open_driver():
     driver = webdriver.Chrome(options=options, service=service)
     return driver
 
-#checks if the selected language is valid
 def valid_language(language):
     if language == 'lt' or language == 'ru' or language == 'en':
         return True
     else:
         return False
 
-#check if the selected subdir for delfi.lt is available for scraping
 def check_correct_subdir(language, argSubdir):
     if valid_language(language):
         listofLTsubdirs = ["tv", "laisvalaikis", "verslas", "sportas", "veidai", ""]
@@ -36,7 +32,6 @@ def check_correct_subdir(language, argSubdir):
         else:
             return argSubdir in listofRUsubdirs
 
-#sets the selected subdir of the website, example: delfi.lt/verslas
 def set_subdir(language, subdir, driver):
     if check_correct_subdir(language, subdir):
         if language == 'lt':
@@ -48,23 +43,18 @@ def set_subdir(language, subdir, driver):
         raise Exception(f"No subdir under name {subdir} is not yet available to scrape or incorrect language")
 
 def store_sql(article_list, output_path):
-#creates a list of touples (because sqlite requires tuples to be inserted) from the given list
     article_list_tuples = []
     for article in article_list:
         article_list_tuples.append((article,))
-    #creates a connection to the database
     con = sqlite3.connect(output_path)
     cursor = con.cursor()
-    #creates articles database
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS articles(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL
     )
     """)
-    #inserts data into articles
     cursor.executemany("INSERT INTO articles (title) VALUES (?)", article_list_tuples)
-    #saves the database
     con.commit()
 
 # stores in text format but with full article content !!! REQUIRES output file to be a folder
@@ -79,17 +69,14 @@ def txt_full_store(title_list, article_list, output_folder):
             file.write(article_list[id])
 #stores a list of articles in the given format
 def store_articles(title_list, article_url_list, format, output):
-    #creates an output folder if it doesnt exist
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if format == "csv":
-        #writes to a csv file
         with open(output_path, mode="w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             for article in title_list:
                 writer.writerow([article])
     if format == "txt":
-        #writes to a txt file
         with open(output_path, mode="w", encoding="utf-8") as file:
             for article in title_list:
                 file.write(article+'\n')
@@ -98,7 +85,6 @@ def store_articles(title_list, article_url_list, format, output):
     if format == "txt_full":
         article_content_list = parse_article_content_text(driver, full_content_url_list)
         txt_full_store(title_list, article_content_list, output_path)
-#strips of unnesecarry info
 def strip_of_hashtags_and_quotes(text):
     if text.startswith('#'):
         space_index = text.find(' ')
@@ -115,9 +101,7 @@ def extract_article_list(html):
     article_list = []
     url_list = []
     for article in articles:
-        #extracts article full paragraph url
         url_list.append(extract_article_content_url(article))
-        #finds the title text
         h5tag = article.find("h5")
         article_text = h5tag.get_text(strip=True)
         article_text = strip_of_hashtags_and_quotes(article_text)
@@ -134,9 +118,7 @@ def extract_article_content_url(article_html):
 #parses the full article which is located in a subdir of delfi
 def parse_article_content_text(driver, url_list):
     article_text_list = []
-    #iterates through all given urls
     for url in url_list:
-        #get the site and extracts the html
         driver.get(url)
         html = driver.page_source
         soup = BeautifulSoup(html,'lxml')
@@ -149,14 +131,12 @@ def parse_article_content_text(driver, url_list):
         p_tags = article_block.find_all('p')
         #extracts the text from the article
         for p in p_tags:
-            #find bare content text in <p>
             text = p.find(text=True, recursive=False)
             #if the text value is null (none) then make it an empty string
             text = text.strip() if text else ''
             full_text = full_text + '\n' + text
         article_text_list.append(full_text)
     return article_text_list
-#parses the config.json file and returns language and subdir
 def parse_json_config():
     with open('config.json', 'r') as file:
         config_data = json.load(file)

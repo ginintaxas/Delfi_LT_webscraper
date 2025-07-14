@@ -3,14 +3,11 @@ from utils import *
 import sys
 import time
 try:
-    #extracts config data from config.json file
     config_data = parse_json_config()
-    #sets site subdir, output format and language based on the config file
     subdir = config_data["subdir"]
     language = config_data["language"]
     format = config_data["output"]["format"]
     output_file = config_data["output"]["file"]
-    #opens a driver and sets driver subdir
     driver = open_driver()
     set_subdir(language, subdir, driver)
     #waits for JS generated content
