@@ -3,12 +3,6 @@
 ## Description
 A Python-based web scraper that extracts top page articles from www.delfi.lt. It fetches and parses web pages, then saves the data in txt/csv/Sqlite format.
 
-## Table of Contents
-- [Installation](#installation)
-- [Description](#description)
-- [Usage](#usage)
-- [Config](#config)
-
 ## Installation
 1. Clone the repository:
    ```bash
